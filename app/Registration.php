@@ -4,12 +4,16 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Registration extends Model
 {
+    use HasApiTokens, Notifiable;
     public static function getUsers() {
         $allUsers = DB::table('paypa_users')->get();
-        //echo "My name is {$username}";
+
         return $allUsers;
     }
 

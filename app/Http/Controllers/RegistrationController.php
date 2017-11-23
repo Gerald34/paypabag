@@ -7,6 +7,7 @@ use App\Registration;
 use Symfony\Component\Debug;
 use Illuminate\Support\Facades\Hash;
 
+
 /**
  * Class RegistrationController
  * @package App\Http\Controllers
@@ -90,6 +91,6 @@ class RegistrationController extends Controller {
         ];
 
         return response()->json($this->response);
-    }
+    } 
     
 }
