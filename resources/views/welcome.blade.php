@@ -8,21 +8,20 @@
         <title>API V1</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
 
         <!-- Styles -->
         <style>
             html, body {
-                background-color: #fff;
                 color: #636b6f;
-                font-family: 'Raleway', sans-serif;
+                font-family: 'Source Sans Pro', sans-serif;
                 font-weight: 100;
-                height: 100vh;
+
                 margin: 0;
             }
 
             .full-height {
-                height: 100vh;
+                height: 60vh;
             }
 
             .flex-center {
@@ -46,15 +45,16 @@
             }
 
             .title {
-                font-size: 54px;
+                font-size: 34px;
+                font-weight:200;
             }
 
             .links > a {
                 color: #636b6f;
-                padding: 0 25px;
+                padding: 0;
                 font-size: 12px;
-                font-weight: 600;
-                letter-spacing: .1rem;
+                font-weight: 900;
+
                 text-decoration: none;
                 text-transform: uppercase;
             }
@@ -65,15 +65,18 @@
         </style>
     </head>
     <body>
+
         <div class="flex-center position-ref full-height">
             <div class="content">
+
                 <div class="title m-b-md">
-                    Application API V1
+                    Paypa Bag Mag : API V1
                 </div>
 
                 <div class="links">
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                    <a target="_blank" href="https://github.com/Gerald34/paypabag">Online Repo GitHub</a>
                 </div>
+
             </div>
         </div>
     </body>
