@@ -1,5 +1,14 @@
-Login Process
-- 201 = success
-- 300 = user does not exist, please register
-- 301 = username and password do not match
+{
+	"errorCode" : {
+		"300" : "user does not exist, please register",
+		"301" : "username and password do not match",
+		"601" : "Username required",
+		"602" : "Password required",
+		"604" : "Password exceeds maximum characters",
+		""
+	},
+	"successCode" : {
+		"201" : "success",
+	}
+}
 
