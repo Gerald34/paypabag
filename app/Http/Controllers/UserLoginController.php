@@ -155,7 +155,7 @@ class UserLoginController extends Controller {
             'responseCode' => 201,
             'message' => 'User found', 
             'userInfo' => $this->sysData,
-            'userToken' => Hash::make('paypa_token')
+            'userToken' => Hash::make("paypa_token{$this->userData['username']}{$this->userData['password']}")
         ];
 
         return $this->response;
