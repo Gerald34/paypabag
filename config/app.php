@@ -167,6 +167,8 @@ return [
         /*
          * Package Service Providers...
          */
+        \Laravel\Passport\PassportServiceProvider::class,
+        \Cyvelnet\Laravel5Fractal\Laravel5FractalServiceProvider::class,
         //Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         /*
          * Application Service Providers...
@@ -175,7 +177,8 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        App\Providers\RouteServiceProvider::class
+
 
     ],
 
@@ -225,6 +228,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        
+        'Fractal' => \Cyvelnet\Laravel5Fractal\Facades\Fractal::class
 
     ],
 

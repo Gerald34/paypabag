@@ -2,10 +2,16 @@
 
 namespace App\Http\Controllers;
 
+// Application Model
+use App\AppUsers;
+
+//System Classes
 use Illuminate\Http\Request;
-use App\Registration;
 use Symfony\Component\Debug;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
+// Processors
 use App\UserLoginProcess;
 
 // Monolog
@@ -22,7 +28,6 @@ class UserLoginController extends Controller {
 
     private $response; // all return json responses
     private $sysData; // all users data
-    private $userData; // user input data
     public $log; // system logger
 
     /**
@@ -33,22 +38,6 @@ class UserLoginController extends Controller {
         $this->log = new Logger('Login');
         $this->log->pushHandler(new RotatingFileHandler('/var/log/paypabg_logs/paypa_login.log', Logger::INFO));
         $this->log->pushHandler(new FirePHPHandler());
-
-        try {
-
-            // Get all registered users
-            $sysData = json_decode(Registration::getUsers());
-
-            if(isset($sysData[0])) {
-                // store in global property
-                $this->sysData = $sysData[0];
-            }
-        } catch(Exception $e) {
-            report($e);
-
-            return false;
-        }
-
     }
 
     /**
@@ -58,42 +47,37 @@ class UserLoginController extends Controller {
      */
     public function getLoginData(Request $request) {
         $jsonData = file_get_contents("/var/www/html/paypa_api/responsecodes.json");
-        
-        // $request->validate([
-        //     'username' => 'required|string|max:15',
-        //     'password' => 'required' 
-        // ]);
 
-        $this->userData = [
-            'username' => $request->input('username'),
-            'password' => $request->input('password')
+        $userData = [
+            'username' => strip_tags(trim($request->input('username'))),
+            'password' => strip_tags(trim($request->input('password')))
         ];
 
-        $validator = UserLoginProcess::loginValidation($this->userData);
+        $validator = UserLoginProcess::loginValidation($userData);
 
         if(isset($validator['errorCode'])) {
             $this->response = $validator;
 
             // add records to the log
-                            // Log Warnings and Failed Response
+            // Log Warnings and Failed Response
             $this->log->error(
-                "Failed Login @ {$_SERVER['REMOTE_ADDR']} by {$this->userData['username']}",
+                "Failed Login @ {$_SERVER['REMOTE_ADDR']} by {$userData['username']}",
                 ["response " => $this->response],
                 $this->response['message']
             );
         } else {
-            $this->response = $this->findUser();
+            $this->response = $this->findUser($userData);
 
             // add records to the log
             if(isset($this->response['responseCode'])):
 
                 // Log Success Response
                 $this->log->info(
-                    "Successful Login @ {$_SERVER['REMOTE_ADDR']} by {$this->userData['username']}",
+                    "Successful Login @ {$_SERVER['REMOTE_ADDR']} by {$userData['username']}",
                     [
                         "input" => [
-                            "username" => $this->userData['username'],
-                            "password" => $this->userData['password']
+                            "username" => $userData['username'],
+                            "password" => $userData['password']
                         ],
                         "output" => $this->response
                     ],
@@ -103,7 +87,7 @@ class UserLoginController extends Controller {
 
                 // Log Warnings and Failed Response
                 $this->log->warning(
-                    "Failed Login @ {$_SERVER['REMOTE_ADDR']} by {$this->userData['username']}",
+                    "Failed Login @ {$_SERVER['REMOTE_ADDR']} by {$userData['username']}",
                     ["response " => $this->response],
                     $this->response['message']
                 );
@@ -116,12 +100,13 @@ class UserLoginController extends Controller {
 
     /**
      * @method FindUser
-     * @return \Illuminate\Http\JsonResponse
+     * @return Array
      */
-    private function findUser() {
-        
-        if($this->userData['username'] === $this->sysData->username):
-            $this->response = $this->checkPassword();
+    private function findUser(array $userData) {
+        $this->sysData = AppUsers::where('username',$userData['username'])->first();
+
+        if(isset($this->sysData) || !empty($this->sysData)):
+            $this->response = $this->checkPassword($userData);
         else:
             $this->response = [
                 'errorCode' => 300,
@@ -136,18 +121,18 @@ class UserLoginController extends Controller {
 
     /**
      * @method CheckPassword
-     * @return \Illuminate\Http\JsonResponse
+     * @return Array
      */
-    private function checkPassword(){
+    private function checkPassword(array $userData){
 
-        if(Hash::check($this->userData['password'], $this->sysData->password)):
-            $this->response = $this->loginEndPoint();
+        if(Hash::check($userData['password'], $this->sysData->password)):
+            $this->response = $this->loginEndPoint($userData);
         else:
             $this->response = [
                 'errorCode' => 301,
                 'input' => [
-                    'username' => $this->userData['username'],
-                    'password' => $this->userData['password']
+                    'username' => $userData['username'],
+                    'password' => $userData['password']
                 ],
                 'message' => "Username and Password do not match!.",
                 'userInfo' => NULL,
@@ -158,20 +143,29 @@ class UserLoginController extends Controller {
         return $this->response;
     }
 
-    private function loginEndPoint() {
-
+    private function loginEndPoint(array $userData){
+        $current_time = Carbon::now();
+        $userID = $this->sysData->id; 
+        
         $this->response = [
             'responseCode' => 201,
             'message' => 'User found', 
             'userInfo' => $this->sysData,
-            'userToken' => Hash::make("paypa_token{$this->userData['username']}{$this->userData['password']}")
+            'userToken' => Hash::make("paypa_token{$this->sysData->username}{$this->sysData->password}"),
+            'current_login_activity' => $current_time,
+            'last_login_time' => $this->sysData->last_login_at
         ];
 
+        $user_login_time = $this->response['current_login_activity'];
+        self::updateLoginTime($user_login_time, $userID);
+        // Update LOgin Time
         return $this->response;
     }
 
-    public function validatePassword() {
-
+    public static function updateLoginTime($user_login_time, $userID) {
+        $login_time = AppUsers::find($userID);
+        $login_time->last_login_at = $user_login_time;
+        $login_time->save();
     }
     
 }

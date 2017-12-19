@@ -59,20 +59,20 @@ class UserLoginProcess {
     public static function registrationValidation($request) {
 
         $userData = [
-            'username' => trim($request->input('username')),
-            'password' => trim($request->input('password')),
-            'paypa_id' => trim($request->input('paypa_id')),
-            'name' => trim($request->input('name')),
-            'surname' => trim($request->input('surname')),
-            'email' => trim($request->input('email')),
-            'gender' => trim($request->input('gender')),
-            'birth_date' => trim($request->input('birth_date')),
-            'street_number' => trim($request->input('street_number')),
-            'street_name' => trim($request->input('street_name')),
-            'suburb' => trim($request->input('suburb')),
-            'city' => trim($request->input('city')),
-            'province' => trim($request->input('province')),
-            'country' => trim($request->input('country'))
+            'username' => strip_tags(trim($request->input('username'))),
+            'password' => strip_tags(trim($request->input('password'))),
+            'paypa_id' => strip_tags(trim($request->input('paypa_id'))),
+            'name' => strip_tags(trim($request->input('name'))),
+            'surname' => strip_tags(trim($request->input('surname'))),
+            'email' => strip_tags(trim($request->input('email'))),
+            'gender' => strip_tags(trim($request->input('gender'))),
+            'birth_date' => strip_tags(trim($request->input('birth_date'))),
+            'street_number' => strip_tags(trim($request->input('street_number'))),
+            'street_name' => strip_tags(trim($request->input('street_name'))),
+            'suburb' => strip_tags(trim($request->input('suburb'))),
+            'city' => strip_tags(trim($request->input('city'))),
+            'province' => strip_tags(trim($request->input('province'))),
+            'country' => strip_tags(trim($request->input('country')))
         ];
 
         return $userData;
