@@ -58,6 +58,11 @@ class UserLoginController extends Controller {
      */
     public function getLoginData(Request $request) {
         $jsonData = file_get_contents("/var/www/html/paypa_api/responsecodes.json");
+        
+        // $request->validate([
+        //     'username' => 'required|string|max:15',
+        //     'password' => 'required' 
+        // ]);
 
         $this->userData = [
             'username' => $request->input('username'),
@@ -66,15 +71,19 @@ class UserLoginController extends Controller {
 
         $validator = UserLoginProcess::loginValidation($this->userData);
 
-        if(isset($validator->original['errorCode'])) {
-            $this->response = $validator->original;
+        if(isset($validator['errorCode'])) {
+            $this->response = $validator;
 
             // add records to the log
-            $this->log->error($this->response);
+                            // Log Warnings and Failed Response
+            $this->log->error(
+                "Failed Login @ {$_SERVER['REMOTE_ADDR']} by {$this->userData['username']}",
+                ["response " => $this->response],
+                $this->response['message']
+            );
         } else {
             $this->response = $this->findUser();
-//            var_dump($this->response);
-//            exit;
+
             // add records to the log
             if(isset($this->response['responseCode'])):
 

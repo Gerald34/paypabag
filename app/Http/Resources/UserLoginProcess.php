@@ -53,9 +53,9 @@ class UserLoginProcess {
             ];
     	}
 
-    	return response()->json($response);
+    	return $response;
     }
-
+    
     public static function registrationValidation($request) {
 
         $userData = [
