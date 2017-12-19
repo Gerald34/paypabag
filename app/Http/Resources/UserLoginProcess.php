@@ -24,7 +24,14 @@ class UserLoginProcess {
                 'userInfo' => NULL,
                 'userToken' => NULL
             ];
-    	}
+    	} elseif($userData['username'][0] !== '@') {
+            $response = [
+                'errorCode' => 607,
+                'message' => "Username should start with the '@' character",
+                'userInfo' => NULL,
+                'userToken' => NULL
+            ];
+        }
 
     	/**
     	 * @validation Password
