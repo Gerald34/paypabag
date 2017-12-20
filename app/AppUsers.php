@@ -27,6 +27,7 @@ use Carbon\Carbon;
  * @property Carbon created_at
  * @property Carbon last_login_at
  * @property Carbon logout_at
+ * @property string token_life
  */
 class AppUsers extends Model
 {

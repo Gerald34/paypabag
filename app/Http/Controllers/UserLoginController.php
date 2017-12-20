@@ -11,8 +11,9 @@ use Symfony\Component\Debug;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
-// Processors
-use App\UserLoginProcess;
+// Resources & Processors
+use App\Http\Resources\UserLoginProcess;
+use App\Http\Resources\DestroyToken;
 
 // Monolog
 use Monolog\Logger;
@@ -46,6 +47,7 @@ class UserLoginController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function getLoginData(Request $request) {
+        
         $jsonData = file_get_contents("/var/www/html/paypa_api/responsecodes.json");
 
         $userData = [
@@ -145,8 +147,6 @@ class UserLoginController extends Controller {
 
     private function loginEndPoint(array $userData){
         $current_time = Carbon::now();
-        $userID = $this->sysData->id; 
-        
         $this->response = [
             'responseCode' => 201,
             'message' => 'User found', 
@@ -155,20 +155,23 @@ class UserLoginController extends Controller {
             'current_login_activity' => $current_time,
             'last_login_time' => $this->sysData->last_login_at
         ];
-
-        $user_login_time = $this->response['current_login_activity'];
-        self::updateLoginTime($user_login_time, $userID);
-        // Update LOgin Time
+        
+        // Update Database to track user activity
+        $userID = $this->sysData->id;
+        $activityData = [
+            'user_login_time' => $this->response['current_login_activity'],
+            'token_life' => $this->response['userToken']
+        ];
+        self::updateLoginTime($activityData, $userID);
+        
         return $this->response;
     }
 
-    public static function updateLoginTime($user_login_time, $userID) {
+    public static function updateLoginTime($activityData, $userID) {
         $login_time = AppUsers::find($userID);
-        $login_time->last_login_at = $user_login_time;
+        $login_time->last_login_at = $activityData['user_login_time'];
+        $login_time->token_life = $activityData['token_life'];
         $login_time->save();
     }
     
 }
-
-//thulani nxumalo
-//063 006 8548

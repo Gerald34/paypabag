@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 use Respect\Validation\Validator as secure;
