@@ -5,9 +5,26 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Class User
+ * @package App
+ * 
+ * @property int id
+ * @property string name
+ * @property string surname
+ * @property string username
+ * @property string username
+ * @property string username
+ * @property string username
+ * @property string username
+ * @property string username
+ * @property string username
+ * @property string username
+ * @property string username
+ */
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -26,4 +43,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function users(){
+        return $this->hasMany(User::class, 'author_id', 'id');
+    }
 }
